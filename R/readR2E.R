@@ -1,4 +1,4 @@
-R2EReadChannel <- function(file, stream){
+R3ReadChannel <- function(file, stream){
   blocks <- blockLevelRead(file)
   
   streams <- list()
@@ -12,7 +12,7 @@ R2EReadChannel <- function(file, stream){
   eegL <- Filter(
     function(b){
       if(!inherits(b, "DataBlock")) return(F)
-      if(attr(b, 'stream')!=streams[stream]) return(F)
+      if(attr(b, 'stream')!=stream) return(F)
       T
     },
     blocks
