@@ -1,98 +1,141 @@
 #include <Rcpp.h>
-
-#undef MESSAGE
-#undef ERROR
-#include "filereader.h"
+#include "protocol.h"
+#include <fstream>
 
 using namespace Rcpp;
+using namespace Resonance::R3;
+using namespace std;
 
-using namespace Resonance::R2E;
-using namespace Resonance;
+void readFromFile(char *memory, std::size_t size, void *data)
+{
+  ifstream *file = static_cast<ifstream*>(data);
+  file->read(memory, size);
+}
+
 
 // [[Rcpp::export]]
 List blockLevelRead(std::string fname)
 {
-  try
-  {
-    R2EReader reader(fname.c_str());
+  ifstream file(fname.c_str(), ifstream::binary);
+  file.exceptions(ios::eofbit | ios::failbit | ios::badbit);
+  List out;
   
-    List out;
-    auto block = reader.nextItem();
-    while(block!=0)
+  try{
+  
+  if(file)
+  {
+    // @todo: need to control errors
+    char head[3];
+    file.read(head,3);
+    if(head[0]!='!'||head[1]!='R'||head[2]!='3')
     {
-      auto item = block->getRoot<FileItem>();
-      if(item.isStream())
-      {
-        auto stream = item.getStream();
-        List si = List::create(
-          Named("id") = stream.getId(),
-          Named("name") = stream.getName().cStr(),
-          Named("channels") = stream.getChannels(),
-          Named("type") = static_cast<int>(stream.getType())
-          );
-        si.attr("class") = "StreamDescription";
-        out.push_back(si);
-      }
-      if(item.isDataBlock())
-      {
-        auto datablock = item.getDataBlock();
-        int stream = datablock.getStream();
-        auto sdb = datablock.getBlock();
-        long long created = sdb.getCreated();
-        long long received = sdb.getReceived();
-        
-        NumericVector createdExp = NumericVector::create(0);
-        *((long long*)&createdExp[0]) = created;
-        createdExp.attr("class") = "integer64";
-        NumericVector receivedExp = NumericVector::create(0);
-        *((long long*)&receivedExp[0]) = received;
-        receivedExp.attr("class") = "integer64";
-        
-        if(sdb.which() == StreamedBlock::DOUBLE)
-        {
-          int channels = sdb.getDouble().getData().size()/sdb.getDouble().getSamples();
-          NumericMatrix db(sdb.getDouble().getSamples(), channels );
-          auto data = sdb.getDouble().getData();
-          
-          int row=0, col=0;
-          for(auto i = data.begin(); i!=data.end(); ++i)
-          {
-            db(row, col++) = *i;
-            if(col>=channels) { row++; col=0; }
-          }
-          
-          db.attr("class") = "DataBlock";
-          db.attr("created") = createdExp;
-          db.attr("received") = receivedExp;
-          db.attr("stream") = stream;
-          out.push_back(db);
-        }
-        if(sdb.which() == StreamedBlock::MESSAGE)
-        {
-          CharacterVector db(sdb.getMessage().cStr());
-          db.attr("class") = "DataBlock";
-          db.attr("created") = createdExp;
-          db.attr("received") = receivedExp;
-          db.attr("stream") = stream;
-          out.push_back(db);
-        }
-      }
-      delete block;
-      try
-      {
-        block = reader.nextItem();
-      }
-      catch(...)
-      {
-        Rf_warning("Wuz errorz while reading");
-        block = 0;
-      }
+      Rf_warning("Wrong header");
+      return out;
     }
     
-    return out;
+    
+    SerializedData sd(readFromFile, &file);
+    bool packed = sd.extractField<FileHeader::packed>();
+    if(packed) return out; // @todo: support packed files
+
+    for(;;){
+      SerializedData item(readFromFile, &file);
+      switch(item.recordId())
+      {
+      case File_Stream::ID:
+        {
+        
+          int id = item.extractField<File_Stream::id>();
+        
+          SerializedData info = item.extractAny<File_Stream::info>();
+        
+          switch(info.recordId())
+          {
+          case ConnectionHeader_Double::ID:
+            {
+            
+              List si = List::create(
+                Named("id") = id,
+                Named("name") = "",
+                Named("channels") = info.extractField<ConnectionHeader_Int64::channels>(),
+                Named("type") = "double"
+              );
+              si.attr("class") = "StreamDescription";
+              out.push_back(si);
+            }
+            break;
+          case ConnectionHeader_Message::ID:
+            {
+              List si = List::create(
+                Named("id") = id,
+                Named("name") = "",
+                Named("channels") = 0,
+                Named("type") = "message"
+              );
+              si.attr("class") = "StreamDescription";
+              out.push_back(si);
+            }
+            break;
+          }
+        }
+        break;
+      case File_DataBlock::ID:
+        {
+          int stream = item.extractField<File_DataBlock::stream>();
+          
+          SerializedData data = item.extractAny<File_DataBlock::block>();
+          
+          switch(data.recordId())
+          {
+          case Double::ID:
+            {
+              int samples = data.extractField<Double::samples>();
+              std::vector<double> raw(data.extractVector<Double::data>());
+              NumericMatrix db(raw.size()/samples, samples, raw.begin() );
+              db = transpose(db);
+              
+              db.attr("class") = "DataBlock";
+              db.attr("created") = (double)data.extractField<Double::created>()/1E3;
+              db.attr("received") = (double)data.extractField<Double::received>()/1E3;
+              db.attr("stream") = stream;
+              out.push_back(db);
+            }
+            break;
+          case Resonance::R3::Int32::ID:
+          {
+            int samples = data.extractField<Resonance::R3::Int32::samples>();
+            std::vector<i32> raw(data.extractVector<Resonance::R3::Int32::data>());
+            NumericMatrix db(raw.size()/samples, samples, raw.begin() );
+            db = transpose(db);
+            
+            db.attr("class") = "DataBlock";
+            db.attr("created") = (double)data.extractField<Resonance::R3::Int32::created>()/1E3;
+            db.attr("received") = (double)data.extractField<Resonance::R3::Int32::received>()/1E3;
+            db.attr("stream") = stream;
+            out.push_back(db);
+          }
+            break;
+          case Message::ID:
+            {
+              CharacterVector db(data.extractString<Message::message>());
+              db.attr("class") = "DataBlock";
+              db.attr("created") = (double)data.extractField<Message::created>()/1E3;
+              db.attr("received") = (double)data.extractField<Message::received>()/1E3;
+              db.attr("stream") = stream;
+              out.push_back(db);
+            }
+            break;
+          }
+        }
+        break;
+      }
+    }
   }
-  catch(...)
-  {
-    return List();
+  }catch(ios_base::failure f){
+
+  }catch(...){
+    Rf_warning("Bugs");
   }
+  
+  return out;
 }
