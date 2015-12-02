@@ -39,13 +39,13 @@
         STRING(parameters) \
     ) \
     \
-    RECORD(Event_DescribeParameters, VOID() )\
+    RECORD(Event_DescribeParameters, _VOID() )\
     \
     RECORD(Event_Parameters, \
         STRING(parameters) \
     ) \
     \
-    RECORD(Event_Describe, VOID()) \
+    RECORD(Event_Describe, _VOID()) \
 \
     RECORD( Event, \
         FIELD(created, u64) \
@@ -75,9 +75,9 @@
         FIELD(channels, u32) \
         FIELD(samplingRate, f64) \
     )\
-    RECORD(ConnectionHeader_Message, VOID() )\
+    RECORD(ConnectionHeader_Message, _VOID() )\
     \
-    RECORD(ConnectionHeader_EventBus, VOID() )\
+    RECORD(ConnectionHeader_EventBus, _VOID() )\
     \
     RECORD(ConnectionHeader, \
         FIELD(type, u16) \
@@ -93,6 +93,7 @@
     \
     RECORD(File_Stream, \
         FIELD(id, u16) \
+        STRING(name) \
         ANY(info) \
     )\
     \

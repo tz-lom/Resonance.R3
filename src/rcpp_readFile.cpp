@@ -2,6 +2,8 @@
 #include "protocol.h"
 #include <fstream>
 
+// [[Rcpp::depends(BH)]]
+
 using namespace Rcpp;
 using namespace Resonance::R3;
 using namespace std;
@@ -56,7 +58,7 @@ List blockLevelRead(std::string fname)
             
               List si = List::create(
                 Named("id") = id,
-                Named("name") = "",
+                Named("name") = item.extractString<File_Stream::name>(),
                 Named("channels") = info.extractField<ConnectionHeader_Int64::channels>(),
                 Named("type") = "double"
               );

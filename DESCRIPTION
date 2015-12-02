@@ -1,11 +1,12 @@
 Package: R3
 Type: Package
-Title: What the package does (short line)
+Title: Reads R3 file format
 Version: 1.0
 Date: 2015-05-17
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: More about what it does (maybe more than one line)
+Author: Yury Nuzhdin
+Maintainer: Yury Nuzhdin <nuzhdin.urii@gmail.com>
+Description: Allows reading of Resonance R3 file type
 License: GPL (>= 2)
+Depends: BH
 Imports: Rcpp (>= 0.11.3)
 LinkingTo: Rcpp
