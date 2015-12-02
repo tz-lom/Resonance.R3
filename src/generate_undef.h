@@ -1,7 +1,7 @@
 #undef FIELD
 #undef VECTOR
 #undef ANY
-#undef VOID
+#undef _VOID
 #undef STRING
 #undef RECORD
 #undef DECLARE_FIELD

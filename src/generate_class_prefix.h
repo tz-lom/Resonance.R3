@@ -72,24 +72,23 @@ public:
         }
         return SerializedData(offset, false);
     }
-    
+
     template< typename Vector > std::string extractString() // @todo: add proper type check
     {
       if(recordId() != Vector::record::ID) throw WrongType();
-      
+
       char *offset = block + sizeof(rid) + sizeof(hel)*Vector::record::headerSize;
-      
+
       offset += Vector::staticOffset;
       for(int i=Vector::dynamicOffset-1; i>=0; --i)
       {
         offset += byte_order_from_le(reinterpret_cast<hel*>(block+sizeof(rid))[i]);
       }
-      
+
       hel size = reinterpret_cast<hel*>(block + sizeof(rid))[Vector::dynamicOffset];
-      
+
       return std::string(offset, size);
     }
-    
 
 #ifdef QT_VERSION
     template< typename Vector> QVector<typename Vector::Tv> extractQVector()
@@ -112,7 +111,7 @@ public:
         typename Vector::V first = reinterpret_cast<typename Vector::V>(offset);
         typename Vector::V last = first + size/sizeof(typename Vector::Tv);
 
-        typename std::vector<typename Vector::Tv>::iterator rp = result.begin();
+        typename QVector<typename Vector::Tv>::iterator rp = result.begin();
 
         while (first!=last) {
             *rp = byte_order_from_le(*first);

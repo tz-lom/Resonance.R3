@@ -17,7 +17,7 @@
 #define FIELD(name, type) ((Field)(name)(type))
 #define VECTOR(name, type) ((Vector)(name)(type))
 #define ANY(name) ((Any)(name)(First))
-#define VOID()    ((Void)(__void)(First))
+#define _VOID()    ((Void)(__void)(First))
 #define STRING(name) VECTOR(name, char)
 //#define STRING(name) ((String)(name)(First))
 #define RECORD(name, Fields) ((name)()(Fields))

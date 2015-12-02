@@ -103,23 +103,23 @@ struct SerializedException {};
 struct WrongType: SerializedException {};
 
 
-template<typename IN> class stringConvert
+template<typename T> class stringConvert
 {
 public:
-    typedef IN IteratorType;
+    typedef T IteratorType;
 
-    stringConvert(IN &in);
+    stringConvert(T &in);
 
     IteratorType begin();
     IteratorType end();
 };
 
-template<typename IN> class vectorConvert
+template<typename T> class vectorConvert
 {
 public:
-    typedef IN IteratorType;
+    typedef T IteratorType;
 
-    vectorConvert(IN &in);
+    vectorConvert(T &in);
 
     IteratorType begin();
     IteratorType end();
@@ -229,6 +229,38 @@ public:
 
 private:
     ::std::vector<T> &vec;
+};
+
+template<typename T>
+struct VectorContainer
+{
+    T* data;
+    ::std::size_t size;
+};
+
+template<typename T>
+class vectorConvert< VectorContainer<T> >
+{
+public:
+    typedef T* IteratorType;
+
+    vectorConvert( VectorContainer<T> in):
+        vec(in)
+    {
+    }
+
+    IteratorType begin()
+    {
+        return vec.data;
+    }
+
+    IteratorType end()
+    {
+        return vec.data+vec.size;
+    }
+
+private:
+    VectorContainer<T> vec;
 };
 
 #ifdef QT_VERSION
