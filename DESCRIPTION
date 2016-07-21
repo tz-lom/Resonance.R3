@@ -7,5 +7,6 @@ Author: Yury Nuzhdin
 Maintainer: Yury Nuzhdin <nuzhdin.urii@gmail.com>
 Description: Allows reading of Resonance R3 file type
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.11.3)
+Imports: Rcpp (>= 0.11.3),
+  Resonance
 LinkingTo: Rcpp, BH

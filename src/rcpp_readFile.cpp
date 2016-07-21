@@ -8,11 +8,7 @@ using namespace Rcpp;
 using namespace Resonance::R3;
 using namespace std;
 
-void readFromFile(char *memory, std::size_t size, void *data)
-{
-  ifstream *file = static_cast<ifstream*>(data);
-  file->read(memory, size);
-}
+#include "read.h"
 
 
 // [[Rcpp::export]]
@@ -44,7 +40,7 @@ List blockLevelRead(std::string fname)
       SerializedData item(readFromFile, &file);
       switch(item.recordId())
       {
-      case File_Stream::ID:
+        case File_Stream::ID:
         {
         
           int id = item.extractField<File_Stream::id>();

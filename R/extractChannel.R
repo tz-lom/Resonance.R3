@@ -1,31 +1,13 @@
 extractChannel <- function(file, channelId){
-  blocks <- blockLevelRead(normalizePath(file, mustWork = T))
+  data <- readStructurized(normalizePath(file, mustWork = T))
   
-  streams <- list()
+  si <- Filter(function(x) x$id == channelId, data$streams)[[1]]
   
-  for(h in 1:4){
-    if(inherits( blocks[[h]], 'StreamDescription')){
-      streams[ blocks[[h]]$name ] <- blocks[[h]]$id
-    }
-  }
-  
-  eegL <- Filter(
-    function(b){
-      if(!inherits(b, "DataBlock")) return(F)
-      if(attr(b, 'stream')!=channelId) return(F)
-      T
-    },
-    blocks
-  )
-  
-  if(is.matrix(eegL[[1]])){
-    cols <- ncol(eegL[[1]])
-    do.call(
-      rbind,
-      lapply(eegL, matrix, ncol=cols)
+  do.call(
+    merge,
+    Filter(
+      function(b) identical(SI(b), si) ,
+      data$blocks
     )
-  } else {
-    eegL
-  }
-  
+  )
 }
