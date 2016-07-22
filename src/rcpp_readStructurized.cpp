@@ -74,7 +74,7 @@ List readStructurized(std::string fname)
                     Named("name") = item.extractString<File_Stream::name>(),
                     Named("channels") = fields.extractField<ConnectionHeader_Double::channels>(),
                     Named("samplingRate") = fields.extractField<ConnectionHeader_Double::samplingRate>(),
-                    Named("type") = "double"
+                    Named("type") = "channels"
                   );
                   rs_addType(types, si, id);
                 }
