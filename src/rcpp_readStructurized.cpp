@@ -31,9 +31,8 @@ List readStructurized(std::string fname)
   List types;
   List blocks;
  
-  Environment env("package:Resonance");
-  Function DB_channels = env["DB.channels"];
-  Function DB_message = env["DB.event"];
+  Function DB_channels("DB.channels", "R3");
+  Function DB_message("DB.event", "R3");
   
   try{
     
