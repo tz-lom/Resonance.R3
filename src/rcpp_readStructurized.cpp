@@ -84,7 +84,7 @@ List readStructurized(std::string fname)
                   List si = List::create(
                     Named("id") = id,
                     Named("name") = item.extractString<File_Stream::name>(),
-                    Named("type") = "message"
+                    Named("type") = "event"
                   );
                   rs_addType(types, si, id);;
                 }
