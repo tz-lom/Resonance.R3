@@ -9,4 +9,4 @@ Description: Allows reading of Resonance R3 file type
 License: GPL (>= 2)
 Imports: Rcpp (>= 0.11.3),
   Resonance
-LinkingTo: Rcpp, BH
+LinkingTo: Rcpp, BH, shiny, R.cache

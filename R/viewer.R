@@ -1,19 +1,5 @@
 R3view <- function(file){
-
-  if(!any(.packages(all.available = T) == 'shiny')){
-    cat('Install package "shiny"\n execute following command in console:\ninstall.packages(\'shiny\')')
-    stop()
-  }  
-  
-  if(!any(.packages(all.available = T) == 'Resonance')){
-    cat('Install package "Resonance"\n execute following command in console:\ninstall.packages(\'Resonance\')')
-    stop()
-  }  
-  library(shiny)
-  library(Resonance)
-  library(R.cache)
-  
-  data <- memoizedCall(extractAllChannels, file)
+  data <- extractAllChannels(file)
   
   minmax <- sapply(data, function(stream){
     switch(
