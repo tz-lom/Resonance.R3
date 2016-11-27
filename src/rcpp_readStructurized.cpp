@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+
 #include "protocol.h"
 #include <fstream>
 
@@ -27,7 +28,6 @@ void rs_addType(List &types, List SI, int id)
 List readStructurized(std::string fname)
 {
   ifstream file(fname.c_str(), ifstream::binary);
-  file.exceptions(ios::eofbit | ios::failbit | ios::badbit);
   List types;
   List blocks;
  
@@ -130,10 +130,14 @@ List readStructurized(std::string fname)
         }
       }
     }
-  }catch(ios_base::failure f){
-    
-  }catch(...){
-    Rf_warning("Bugs");
+  }
+  catch(const Eof &f){
+  }
+  catch(...){
+    Rf_warning("Bugs (%i blocks readed)", blocks.length());
+    /*std::cout << "\nUnknown exception type: '" << (__cxa_current_exception_type()->name()) << "'" << std::endl;
+    int status;
+    std::cout << "fuck: " << abi::__cxa_demangle(__cxa_current_exception_type()->name(), 0, 0, &status) << std::endl;*/
   }
   
   return List::create(
