@@ -68,12 +68,23 @@ List readStructurized(std::string fname)
               {
                 case Double::ID:
                 {
-                  
                   List si = List::create(
                     Named("id") = id,
                     Named("name") = item.extractString<File_Stream::name>(),
                     Named("channels") = fields.extractField<ConnectionHeader_Double::channels>(),
                     Named("samplingRate") = fields.extractField<ConnectionHeader_Double::samplingRate>(),
+                    Named("type") = "channels"
+                  );
+                  rs_addType(types, si, id);
+                }
+                break;
+                case Resonance::R3::Int32::ID:
+                {
+                  List si = List::create(
+                    Named("id") = id,
+                    Named("name") = item.extractString<File_Stream::name>(),
+                    Named("channels") = fields.extractField<ConnectionHeader_Int32::channels>(),
+                    Named("samplingRate") = fields.extractField<ConnectionHeader_Int32::samplingRate>(),
                     Named("type") = "channels"
                   );
                   rs_addType(types, si, id);
@@ -108,6 +119,18 @@ List readStructurized(std::string fname)
                 
                 db.attr("created") = (double)data.extractField<Double::created>()/1E3;
                 db.attr("received") = (double)data.extractField<Double::received>()/1E3;
+                
+                blocks.push_back(db);
+                
+              }
+              break;
+              case Resonance::R3::Int32::ID:
+              {
+                std::vector<int> raw(data.extractVector<Resonance::R3::Int32::data>());
+                RObject db = DB_channels(types[stream], (double)data.extractField<Resonance::R3::Int32::created>()/1E3, raw);
+                
+                db.attr("created") = (double)data.extractField<Resonance::R3::Int32::created>()/1E3;
+                db.attr("received") = (double)data.extractField<Resonance::R3::Int32::received>()/1E3;
                 
                 blocks.push_back(db);
                 
