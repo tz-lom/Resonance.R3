@@ -129,7 +129,7 @@ List blockLevelRead(std::string fname)
       }
     }
   }
-  }catch(ios_base::failure f){
+  }catch(Eof f){
 
   }catch(...){
     Rf_warning("Bugs");
