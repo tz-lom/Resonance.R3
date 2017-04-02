@@ -16,14 +16,25 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// readStructurized
-List readStructurized(std::string fname);
-RcppExport SEXP R3_readStructurized(SEXP fnameSEXP) {
+// readStructurized_R2
+List readStructurized_R2(std::string fname);
+RcppExport SEXP R3_readStructurized_R2(SEXP fnameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::string >::type fname(fnameSEXP);
-    __result = Rcpp::wrap(readStructurized(fname));
+    __result = Rcpp::wrap(readStructurized_R2(fname));
+    return __result;
+END_RCPP
+}
+// readStructurized_R3
+List readStructurized_R3(std::string fname);
+RcppExport SEXP R3_readStructurized_R3(SEXP fnameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::string >::type fname(fnameSEXP);
+    __result = Rcpp::wrap(readStructurized_R3(fname));
     return __result;
 END_RCPP
 }

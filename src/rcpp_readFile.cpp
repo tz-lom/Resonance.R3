@@ -1,11 +1,11 @@
 #include <Rcpp.h>
-#include "protocol.h"
+#include "R2/protocol.h"
 #include <fstream>
 
 // [[Rcpp::depends(BH)]]
 
 using namespace Rcpp;
-using namespace Resonance::R3;
+using namespace Resonance::R2;
 using namespace std;
 
 #include "read.h"
@@ -99,16 +99,16 @@ List blockLevelRead(std::string fname)
               out.push_back(db);
             }
             break;
-          case Resonance::R3::Int32::ID:
+          case Resonance::R2::Int32::ID:
           {
-            int samples = data.extractField<Resonance::R3::Int32::samples>();
-            std::vector<i32> raw(data.extractVector<Resonance::R3::Int32::data>());
+            int samples = data.extractField<Resonance::R2::Int32::samples>();
+            std::vector<i32> raw(data.extractVector<Resonance::R2::Int32::data>());
             NumericMatrix db(raw.size()/samples, samples, raw.begin() );
             db = transpose(db);
             
             db.attr("class") = "DataBlock";
-            db.attr("created") = (double)data.extractField<Resonance::R3::Int32::created>()/1E3;
-            db.attr("received") = (double)data.extractField<Resonance::R3::Int32::received>()/1E3;
+            db.attr("created") = (double)data.extractField<Resonance::R2::Int32::created>()/1E3;
+            db.attr("received") = (double)data.extractField<Resonance::R2::Int32::received>()/1E3;
             db.attr("stream") = stream;
             out.push_back(db);
           }

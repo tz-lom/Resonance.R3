@@ -104,7 +104,7 @@
 
 
 namespace Resonance {
-namespace R3 {
+namespace R2 {
 
 struct FileHeaderIdentificator {
     char header[2];

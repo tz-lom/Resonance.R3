@@ -1,6 +1,6 @@
 #include <Rcpp.h>
 
-#include "protocol.h"
+#include "R3/protocol.switch.h"
 #include <fstream>
 
 // [[Rcpp::depends(BH)]]
@@ -12,7 +12,7 @@ using namespace std;
 #include "read.h"
 
 
-void rs_addType(List &types, List SI, int id)
+void rs_addType2(List &types, List SI, int id)
 {
   
   for(int t=types.size(); t<=id; ++t)
@@ -25,7 +25,7 @@ void rs_addType(List &types, List SI, int id)
 
 
 // [[Rcpp::export]]
-List readStructurized(std::string fname)
+List readStructurized_R3(std::string fname)
 {
   ifstream file(fname.c_str(), ifstream::binary);
   List types;
@@ -40,9 +40,8 @@ List readStructurized(std::string fname)
     {
       char head[3];
       file.read(head,3);
-      if(head[0]!='!'||head[1]!='R'||head[2]!='3')
+      if(head[0]!='@'||head[1]!='R'||head[2]!='3')
       {
-        Rf_warning("Wrong header");
         return List();
       }
       
@@ -52,7 +51,7 @@ List readStructurized(std::string fname)
       
       for(;;){
         SerializedData item(readFromFile, &file);
-        switch(item.recordId())
+        switch(item.id())
         {
           case File_Stream::ID:
           {
@@ -60,47 +59,44 @@ List readStructurized(std::string fname)
             int id = item.extractField<File_Stream::id>();
             
             SerializedData info = item.extractAny<File_Stream::info>();
-            SerializedData fields = info.extractAny<ConnectionHeader::description>();
-            
-            if(info.recordId() == ConnectionHeader::ID)
+
+          
+            switch(info.id())
             {
-              switch(info.extractField<ConnectionHeader::type>())
+              case ConnectionHeader_Float64::ID:
               {
-                case Double::ID:
-                {
-                  List si = List::create(
-                    Named("id") = id,
-                    Named("name") = item.extractString<File_Stream::name>(),
-                    Named("channels") = fields.extractField<ConnectionHeader_Double::channels>(),
-                    Named("samplingRate") = fields.extractField<ConnectionHeader_Double::samplingRate>(),
-                    Named("type") = "channels"
-                  );
-                  rs_addType(types, si, id);
-                }
-                break;
-                case Resonance::R3::Int32::ID:
-                {
-                  List si = List::create(
-                    Named("id") = id,
-                    Named("name") = item.extractString<File_Stream::name>(),
-                    Named("channels") = fields.extractField<ConnectionHeader_Int32::channels>(),
-                    Named("samplingRate") = fields.extractField<ConnectionHeader_Int32::samplingRate>(),
-                    Named("type") = "channels"
-                  );
-                  rs_addType(types, si, id);
-                }
-                break;
-                case Message::ID:
-                {
-                  List si = List::create(
-                    Named("id") = id,
-                    Named("name") = item.extractString<File_Stream::name>(),
-                    Named("type") = "event"
-                  );
-                  rs_addType(types, si, id);;
-                }
-                break;
+                List si = List::create(
+                  Named("id") = id,
+                  Named("name") = item.extractString<File_Stream::name>(),
+                  Named("channels") = info.extractField<ConnectionHeader_Float64::channels>(),
+                  Named("samplingRate") = info.extractField<ConnectionHeader_Float64::samplingRate>(),
+                  Named("type") = "channels"
+                );
+                rs_addType2(types, si, id);
               }
+              break;
+              case ConnectionHeader_Int32::ID:
+              {
+                List si = List::create(
+                  Named("id") = id,
+                  Named("name") = item.extractString<File_Stream::name>(),
+                  Named("channels") = info.extractField<ConnectionHeader_Int32::channels>(),
+                  Named("samplingRate") = info.extractField<ConnectionHeader_Int32::samplingRate>(),
+                  Named("type") = "channels"
+                );
+                rs_addType2(types, si, id);
+              }
+              break;
+              case ConnectionHeader_Message::ID:
+              {
+                List si = List::create(
+                  Named("id") = id,
+                  Named("name") = item.extractString<File_Stream::name>(),
+                  Named("type") = "event"
+                );
+                rs_addType2(types, si, id);
+              }
+              break;
             }
           }
           break;
@@ -110,15 +106,15 @@ List readStructurized(std::string fname)
             
             SerializedData data = item.extractAny<File_DataBlock::block>();
             
-            switch(data.recordId())
+            switch(data.id())
             {
-              case Double::ID:
+              case Float64::ID:
               {
-                std::vector<double> raw(data.extractVector<Double::data>());
-                RObject db = DB_channels(types[stream], (double)data.extractField<Double::created>()/1E3, raw);
+                std::vector<double> raw(data.extractVector<Float64::data>());
+                RObject db = DB_channels(types[stream], (double)data.extractField<Float64::created>()/1E3, raw);
                 
-                db.attr("created") = (double)data.extractField<Double::created>()/1E3;
-                db.attr("received") = (double)data.extractField<Double::received>()/1E3;
+                db.attr("created") = (double)data.extractField<Float64::created>()/1E3;
+                db.attr("received") = (double)data.extractField<Float64::received>()/1E3;
                 
                 blocks.push_back(db);
                 

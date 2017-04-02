@@ -5,7 +5,11 @@ blockLevelRead <- function(fname) {
     .Call('R3_blockLevelRead', PACKAGE = 'R3', fname)
 }
 
-readStructurized <- function(fname) {
-    .Call('R3_readStructurized', PACKAGE = 'R3', fname)
+readStructurized_R2 <- function(fname) {
+    .Call('R3_readStructurized_R2', PACKAGE = 'R3', fname)
+}
+
+readStructurized_R3 <- function(fname) {
+    .Call('R3_readStructurized_R3', PACKAGE = 'R3', fname)
 }
 
