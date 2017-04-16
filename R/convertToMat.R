@@ -1,6 +1,12 @@
 convertToMat <- function(file, output = paste0(file, '.mat')){
   data <- extractAllChannels(file)
   
+  names(data) <- ave(
+    names(data),
+    names(data),
+    FUN= function(x) if (length(x) == 1) x else sprintf("%s%02d", x, seq_along(x))
+    )
+  
   params <- lapply(data, function(x) as.array(SI(x)) )
   names(params) <- paste0(names(data), '_params')
   
@@ -11,6 +17,13 @@ convertToMat <- function(file, output = paste0(file, '.mat')){
     )
   })
   names(extVars) <- paste0(names(data), '_time')
+  
+  data <- lapply(data, function(d){
+    switch(SI(d)$type,
+      event = simplify2array(d),
+      channels = array(d, dim(d))
+    )
+  })
   
   do.call(
     R.matlab::writeMat,
