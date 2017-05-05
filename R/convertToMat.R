@@ -1,4 +1,4 @@
-convertToMat <- function(file, output = paste0(file, '.mat')){
+convertToMat <- function(file, output = paste0(file, '.mat'), params_output=paste0(file, '.params.mat')){
   data <- extractAllChannels(file)
   
   names(data) <- ave(
@@ -41,7 +41,7 @@ convertToMat <- function(file, output = paste0(file, '.mat')){
   do.call(
     R.matlab::writeMat,
     c(
-      list(con=paste0(output, '.params')),
+      list(con=params_output),
       params
     )
   )
