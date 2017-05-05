@@ -20,18 +20,31 @@ convertToMat <- function(file, output = paste0(file, '.mat')){
   
   data <- lapply(data, function(d){
     switch(SI(d)$type,
-      event = simplify2array(d),
+      event = {
+        if(length(d)>0){
+          simplify2array(d)
+        } else {
+          vector("character")
+        }
+      },
       channels = array(d, dim(d))
     )
   })
   
+  rmatio::write.mat(
+    c(
+      extVars,
+      data
+    ),
+    output
+  )
   do.call(
     R.matlab::writeMat,
     c(
-      list(con=output),
-      params,
-      extVars,
-      data
+      list(con=paste0(output, '.params')),
+      params
     )
   )
+  
+  
 }
