@@ -16,4 +16,4 @@ LineEndingConversion: Posix
 
 BuildType: Package
 PackageUseDevtools: Yes
-PackageInstallArgs: --no-multiarch --with-keep.source
+PackageInstallArgs: --with-keep.source
