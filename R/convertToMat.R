@@ -27,16 +27,25 @@ convertToMat <- function(file, output = paste0(file, '.mat'), params_output=past
           vector("character")
         }
       },
-      channels = array(d, dim(d))
+      channels = {
+        if(nrow(d)>0){
+          array(d, dim(d))
+        } else {
+          NULL
+        }
+      }
     )
   })
+  
+  data <- Filter(Negate(is.null), data)
+  extVars <- Filter(Negate(is.null), extVars)
   
   rmatio::write.mat(
     c(
       extVars,
       data
     ),
-    output
+    output,compression = FALSE
   )
   do.call(
     R.matlab::writeMat,
