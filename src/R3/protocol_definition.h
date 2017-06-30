@@ -28,7 +28,7 @@
     )\
     \
     RECORD(EventBus_Description_Url,\
-           STRING(url) \
+        STRING(url) \
     )\
     \
     \
@@ -51,7 +51,7 @@
     \
     RECORD(ConnectionHeader_Message, _VOID() )\
     \
-    RECORD( Message, \
+    RECORD(Message, \
         FIELD(created, u64) \
         FIELD(received, u64) \
         STRING(message) \
@@ -103,10 +103,26 @@
         FIELD(channels, u32) \
         FIELD(samplingRate, f64) \
     )\
-    RECORD( Int64, \
+    RECORD(Int64, \
         FIELD(created, u64) \
         FIELD(received, u64) \
         FIELD(samples, u32) \
         VECTOR(data, i64) \
+    )\
+    RECORD(ConnectionHeaderContainer, \
+        STRING(name) \
+        STRING(serviceUid) \
+        ANY(type) \
+    )\
+    RECORD(FileStreamSourceInfo, \
+        FIELD(stream, u16) \
+        STRING(name) \
+        STRING(uid) \
+        VECTOR_ANY(urls) \
+        FIELD(timestamp, u64) \
+    )\
+    RECORD(FileStreamTerminated, \
+        FIELD(stream, u16) \
+        FIELD(timestamp, u64) \
     )
 

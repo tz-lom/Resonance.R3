@@ -38,3 +38,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+
+static const R_CallMethodDef CallEntries[] = {
+    {"R3_blockLevelRead", (DL_FUNC) &R3_blockLevelRead, 1},
+    {"R3_readStructurized_R2", (DL_FUNC) &R3_readStructurized_R2, 1},
+    {"R3_readStructurized_R3", (DL_FUNC) &R3_readStructurized_R3, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_R3(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
+}
