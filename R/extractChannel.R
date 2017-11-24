@@ -8,7 +8,7 @@ extractChannel <- function(file, channel){
   }
   
   do.call(
-    merge,
+    DBcombine,
     Filter(
       function(b) identical(SI(b), si) ,
       data$blocks

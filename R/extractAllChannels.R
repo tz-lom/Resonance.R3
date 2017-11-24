@@ -8,7 +8,7 @@ extractAllChannels <- function(file){
     )
     if(length(flt)>0){
       do.call(
-        merge,
+        DBcombine,
         flt
       )
     } else {
