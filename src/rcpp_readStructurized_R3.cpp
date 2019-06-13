@@ -111,10 +111,10 @@ List readStructurized_R3(std::string fname)
               case Float64::ID:
               {
                 std::vector<double> raw(data.extractVector<Float64::data>());
-                RObject db = DB_channels(types[stream], (double)data.extractField<Float64::created>()/1E3, raw);
+                RObject db = DB_channels(types[stream], (double)data.extractField<Float64::created>()/TIME_SCALING_FACTOR, raw);
                 
-                db.attr("created") = (double)data.extractField<Float64::created>()/1E3;
-                db.attr("received") = (double)data.extractField<Float64::received>()/1E3;
+                db.attr("created") = (double)data.extractField<Float64::created>()/TIME_SCALING_FACTOR;
+                db.attr("received") = (double)data.extractField<Float64::received>()/TIME_SCALING_FACTOR;
                 
                 blocks.push_back(db);
                 
@@ -123,10 +123,10 @@ List readStructurized_R3(std::string fname)
               case Resonance::R3::Int32::ID:
               {
                 std::vector<int> raw(data.extractVector<Resonance::R3::Int32::data>());
-                RObject db = DB_channels(types[stream], (double)data.extractField<Resonance::R3::Int32::created>()/1E3, raw);
+                RObject db = DB_channels(types[stream], (double)data.extractField<Resonance::R3::Int32::created>()/TIME_SCALING_FACTOR, raw);
                 
-                db.attr("created") = (double)data.extractField<Resonance::R3::Int32::created>()/1E3;
-                db.attr("received") = (double)data.extractField<Resonance::R3::Int32::received>()/1E3;
+                db.attr("created") = (double)data.extractField<Resonance::R3::Int32::created>()/TIME_SCALING_FACTOR;
+                db.attr("received") = (double)data.extractField<Resonance::R3::Int32::received>()/TIME_SCALING_FACTOR;
                 
                 blocks.push_back(db);
                 
@@ -135,10 +135,10 @@ List readStructurized_R3(std::string fname)
               case Message::ID:
               {
                 CharacterVector raw(data.extractString<Message::message>());
-                RObject db = DB_message(types[stream], (double)data.extractField<Message::created>()/1E3, raw);
+                RObject db = DB_message(types[stream], (double)data.extractField<Message::created>()/TIME_SCALING_FACTOR, raw);
                 
-                db.attr("created") = (double)data.extractField<Message::created>()/1E3;
-                db.attr("received") = (double)data.extractField<Message::received>()/1E3;
+                db.attr("created") = (double)data.extractField<Message::created>()/TIME_SCALING_FACTOR;
+                db.attr("received") = (double)data.extractField<Message::received>()/TIME_SCALING_FACTOR;
 
                 blocks.push_back(db);
               }

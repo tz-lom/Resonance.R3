@@ -4,6 +4,8 @@
 #include <numeric>
 #include <exception>
 
+#define TIME_SCALING_FACTOR (1)
+
 class Eof: public std::exception {};
 class Error: public std::exception {};
 

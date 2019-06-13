@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // blockLevelRead
 List blockLevelRead(std::string fname);
-RcppExport SEXP R3_blockLevelRead(SEXP fnameSEXP) {
+RcppExport SEXP _R3_blockLevelRead(SEXP fnameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -18,7 +18,7 @@ END_RCPP
 }
 // readStructurized_R2
 List readStructurized_R2(std::string fname);
-RcppExport SEXP R3_readStructurized_R2(SEXP fnameSEXP) {
+RcppExport SEXP _R3_readStructurized_R2(SEXP fnameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,7 +29,7 @@ END_RCPP
 }
 // readStructurized_R3
 List readStructurized_R3(std::string fname);
-RcppExport SEXP R3_readStructurized_R3(SEXP fnameSEXP) {
+RcppExport SEXP _R3_readStructurized_R3(SEXP fnameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -37,4 +37,16 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(readStructurized_R3(fname));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_R3_blockLevelRead", (DL_FUNC) &_R3_blockLevelRead, 1},
+    {"_R3_readStructurized_R2", (DL_FUNC) &_R3_readStructurized_R2, 1},
+    {"_R3_readStructurized_R3", (DL_FUNC) &_R3_readStructurized_R3, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_R3(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
