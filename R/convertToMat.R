@@ -12,8 +12,8 @@ convertToMat <- function(file, output = paste0(file, '.mat'), params_output=past
   
   extVars <- lapply(data, function(d){
     switch (SI(d)$type,
-      event = sapply(d, attr, 'TS'),
-      channels = attr(d, 'TS')[[1]]
+      event = as.double(do.call(c, lapply(d, attr, 'TS'))),
+      channels = as.double(attr(d, 'TS')[[1]])
     )
   })
   names(extVars) <- paste0(names(data), '_time')
